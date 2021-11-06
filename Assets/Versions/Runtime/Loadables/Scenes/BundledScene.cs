@@ -37,28 +37,34 @@ namespace VEngine
 
         protected override void OnUnload()
         {
-            base.OnUnload();
             if (dependencies != null)
             {
-                dependencies.Unload();
+                dependencies.Release();
                 dependencies = null;
             }
+
+            base.OnUnload();
         }
 
 
         protected override void OnLoad()
         {
             PrepareToLoad();
-            dependencies = new Dependencies
-            {
-                pathOrURL = pathOrURL
-            };
+            dependencies = Dependencies.Load(pathOrURL, mustCompleteOnNextFrame);
             dependencies.Load();
-            status = LoadableStatus.DependentLoading;
+            if (mustCompleteOnNextFrame)
+            {
+                SceneManager.LoadScene(sceneName, loadSceneMode);
+                Finish();
+            }
+            else
+            {
+                status = LoadableStatus.DependentLoading;
+            }
         }
 
         internal static Scene Create(string assetPath, bool additive = false)
-        {
+        { 
             if (!Versions.Contains(assetPath))
                 return new Scene
                 {

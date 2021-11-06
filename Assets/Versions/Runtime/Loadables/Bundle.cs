@@ -10,9 +10,9 @@ namespace VEngine
 
         public static readonly Dictionary<string, Bundle> Cache = new Dictionary<string, Bundle>();
 
-        public static readonly List<Bundle> Unused = new List<Bundle>();
-
         public ManifestBundle info;
+
+        private static readonly Dictionary<string, AssetBundle> AssetBundles = new Dictionary<string, AssetBundle>();
 
         public AssetBundle assetBundle { get; protected set; }
 
@@ -20,11 +20,17 @@ namespace VEngine
         {
             assetBundle = bundle;
             Finish(assetBundle == null ? "assetBundle == null" : null);
+            AssetBundles[info.name] = bundle;
         }
 
-        protected override void OnUnused()
+        public static Bundle Load(string assetPath)
         {
-            Unused.Add(this);
+            return LoadInternal(Versions.GetBundle(assetPath), true);
+        }
+
+        public static Bundle LoadAsync(string assetPath)
+        {
+            return LoadInternal(Versions.GetBundle(assetPath), false);
         }
 
         internal static Bundle LoadInternal(ManifestBundle bundle, bool mustCompleteOnNextFrame)
@@ -33,10 +39,16 @@ namespace VEngine
 
             if (!Cache.TryGetValue(bundle.nameWithAppendHash, out var item))
             {
+                if (AssetBundles.TryGetValue(bundle.name, out var assetBundle))
+                {
+                    assetBundle.Unload(false);
+                    AssetBundles.Remove(bundle.name);
+                }
+
                 var url = Versions.GetBundlePathOrURL(bundle);
                 if (Application.platform == RuntimePlatform.WebGLPlayer)
                 {
-                    throw new NotImplementedException("开源版不提供 WebGL 支持");
+                    item = new WebBundle { pathOrURL = url, info = bundle };
                 }
                 else
                 {
@@ -44,9 +56,9 @@ namespace VEngine
                     if (item == null)
                     {
                         if (url.StartsWith("http://") || url.StartsWith("https://") || url.StartsWith("ftp://"))
-                            item = new DownloadBundle {pathOrURL = url, info = bundle};
+                            item = new DownloadBundle { pathOrURL = url, info = bundle };
                         else
-                            item = new LocalBundle {pathOrURL = url, info = bundle};
+                            item = new LocalBundle { pathOrURL = url, info = bundle };
                     }
                 }
 
@@ -60,29 +72,13 @@ namespace VEngine
             return item;
         }
 
-        internal static void UpdateBundles()
-        {
-            for (var index = 0; index < Unused.Count; index++)
-            {
-                var item = Unused[index];
-                if (!item.isDone) continue;
-
-                Unused.RemoveAt(index);
-                index--;
-                if (!item.reference.unused) continue;
-
-                item.Unload();
-                Cache.Remove(item.info.nameWithAppendHash);
-                if (Updater.Instance.busy) return;
-            }
-        }
-
         protected override void OnUnload()
         {
             if (assetBundle == null) return;
-
             assetBundle.Unload(true);
             assetBundle = null;
+            AssetBundles.Remove(info.name);
+            Cache.Remove(info.nameWithAppendHash);
         }
     }
 }

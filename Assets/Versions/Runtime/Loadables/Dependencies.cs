@@ -5,6 +5,25 @@ namespace VEngine
 {
     public class Dependencies : Loadable
     {
+        public static readonly Dictionary<string, Dependencies> Cache = new Dictionary<string, Dependencies>();
+
+        public static Dependencies Load(string path, bool mustCompleteOnNextFrame)
+        {
+            if (!Cache.TryGetValue(path, out var item))
+            {
+                item = new Dependencies() { pathOrURL = path, mustCompleteOnNextFrame = mustCompleteOnNextFrame };
+                Cache.Add(path, item);
+            }
+
+            item.Load();
+            if (mustCompleteOnNextFrame)
+            {
+                item.LoadImmediate();
+            }
+
+            return item;
+        }
+
         protected readonly List<Bundle> bundles = new List<Bundle>();
         protected Bundle mainBundle;
 
@@ -50,6 +69,8 @@ namespace VEngine
             }
 
             mainBundle = null;
+
+            Cache.Remove(pathOrURL);
         }
 
         protected override void OnUpdate()

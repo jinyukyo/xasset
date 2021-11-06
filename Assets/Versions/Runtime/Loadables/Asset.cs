@@ -9,8 +9,6 @@ namespace VEngine
     {
         public static readonly Dictionary<string, Asset> Cache = new Dictionary<string, Asset>();
 
-        public static readonly List<Asset> Unused = new List<Asset>();
-
         public Action<Asset> completed;
 
         public Object asset { get; protected set; }
@@ -52,7 +50,11 @@ namespace VEngine
         protected override void OnUnused()
         {
             completed = null;
-            Unused.Add(this);
+        }
+
+        protected override void OnUnload()
+        {
+            Cache.Remove(pathOrURL);
         }
 
         public static Asset LoadAsync(string path, Type type, Action<Asset> completed = null)
@@ -67,7 +69,7 @@ namespace VEngine
 
         internal static Asset LoadInternal(string path, Type type, bool mustCompleteOnNextFrame,
             Action<Asset> completed = null)
-        {
+        { 
             if (!Versions.Contains(path))
             {
                 Logger.E("FileNotFoundException {0}", path);
@@ -87,22 +89,6 @@ namespace VEngine
             if (mustCompleteOnNextFrame) item.LoadImmediate();
 
             return item;
-        }
-
-        public static void UpdateAssets()
-        {
-            for (var index = 0; index < Unused.Count; index++)
-            {
-                var item = Unused[index];
-                if (!item.isDone) continue;
-
-                Unused.RemoveAt(index);
-                index--;
-                if (!item.reference.unused) continue;
-
-                item.Unload();
-                Cache.Remove(item.pathOrURL);
-            }
         }
     }
 }

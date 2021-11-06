@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -8,7 +7,6 @@ namespace VEngine
 {
     public class ManifestAsset : Loadable
     {
-        private static readonly List<ManifestAsset> Unused = new List<ManifestAsset>();
         private bool builtin;
         private UnityWebRequest request;
         public Manifest asset { get; protected set; }
@@ -31,17 +29,13 @@ namespace VEngine
         protected override void OnLoad()
         {
             asset = ScriptableObject.CreateInstance<Manifest>();
-            asset.name = name;
+            var split = name.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+            asset.name = split.Length > 1 ? split[0] : name;
             pathOrURL = builtin ? Versions.GetPlayerDataURL(name) : Versions.GetDownloadURL(name);
             var file = Manifest.GetVersionFile(name);
             var url = builtin ? Versions.GetPlayerDataURL(file) : Versions.GetDownloadURL(file);
             DownloadAsync(url, GetTemporaryPath(file));
             status = LoadableStatus.CheckVersion;
-        }
-
-        protected override void OnUnused()
-        {
-            Unused.Add(this);
         }
 
         public virtual void Override()
@@ -73,17 +67,6 @@ namespace VEngine
             else
             {
                 if (!changed) return;
-
-                var split = name.Split(new[]
-                {
-                    '_'
-                }, StringSplitOptions.RemoveEmptyEntries);
-                if (split.Length > 1)
-                {
-                    var newName = split[0];
-                    asset.name = newName;
-                }
-
                 var from = GetTemporaryPath(name);
                 var dest = Versions.GetDownloadDataPath(name).Replace(name, asset.name);
                 if (File.Exists(from))
@@ -119,21 +102,6 @@ namespace VEngine
                 name = name,
                 builtin = builtin
             };
-        }
-
-        public static void UpdateManifestAssets()
-        {
-            for (var index = 0; index < Unused.Count; index++)
-            {
-                var item = Unused[index];
-                if (Updater.Instance.busy) break;
-
-                if (!item.isDone) continue;
-
-                Unused.RemoveAt(index);
-                index--;
-                item.Unload();
-            }
         }
 
         private void DownloadAsync(string url, string savePath)
