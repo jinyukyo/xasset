@@ -530,7 +530,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Powerd by xasset
+  m_Text: Powered by xasset
 --- !u!222 &1474895078
 CanvasRenderer:
   m_ObjectHideFlags: 0
