@@ -18,7 +18,7 @@ xasset 是开箱即用的 Unity 分包，加密和热更框架。
 
 阅读[版本比较](https://xasset.github.io/docs/compares)可以比较细致的了解开源版本和团队订阅版本的差异。
 
-<h1>xasset <small style="font-size:16px">7</small></h1>
+## xasset 7
 
 这里是最新的 xasset 7 的开源版本，可以使用以下 3 种开发模式进行快速开发和迭代：
 
@@ -41,12 +41,12 @@ xasset 是开箱即用的 Unity 分包，加密和热更框架。
 
 对比开源版本，订阅版本主要的优势在于：
 
-- **[分布式增量打包支持](https://xasset.github.io/docs/getting-started/buildbundles)**：对于大体量的项目，可以根据一些规则把资源拆分为多个 Build 模块，然后选择局部内容构建，加快打包效率。
-- **[安装包资源加密支持](https://xasset.github.io/docs/advance/binarymode)**：不仅可以防止安装包资源被 AssetStudio 之类的工具轻易提取，并且 Android 真机测试加载资源的耗时有 10% 左右的提升。
-- **[安装包资源分包](https://xasset.github.io/docs/getting-started/splitbuild)**：可以预定义多组配置，按需分离安装包的资源，支持空包启动，最小包包体轻松控制到 30 MB。
+- [分布式增量打包支持](https://xasset.github.io/docs/getting-started/buildbundles)：对于大体量的项目，可以根据一些规则把资源拆分为多个 Build 模块，然后选择局部内容构建，加快打包效率。
+- [安装包资源加密支持](https://xasset.github.io/docs/advance/binarymode)：不仅可以防止安装包资源被 AssetStudio 之类的工具轻易提取，并且 Android 真机测试加载资源的耗时有 10% 左右的提升。
+- [安装包资源分包](https://xasset.github.io/docs/getting-started/splitbuild)：可以预定义多组配置，按需分离安装包的资源，支持空包启动，最小包包体轻松控制到 30 MB。
 - **局部资源下载更新功能**：可以根据资源加载路径或分组名字查询和下载更新，支持自动热重载，资源更新后无需重启。
 - **提供了多线程下载工具**：支持限速，断点续传，网络异常自修复，文件指纹校验机制。
-- **[谷歌分包技术适配](https://xasset.github.io/docs/advance/pad)**：适配了 PlayAssetDelivery 服务，安装包大小可以轻松突破 150MB 的限制。
+- [谷歌分包技术适配](https://xasset.github.io/docs/advance/pad)：适配了 PlayAssetDelivery 服务，安装包大小可以轻松突破 150MB 的限制。
 - **专属对接群**：多位资深行业从业者，提供更迅捷、全面的技术支持服务。
 - **XLua 打包加载支持**：基于 XLua 提供了 Lua 文件编辑器和真机环境打包和加载支持，轻松让 Lua 代码具备热更能力。
 
@@ -90,7 +90,7 @@ xasset 是开箱即用的 Unity 分包，加密和热更框架。
 
 ## 授权许可
 
-请注意，xasset 具有特殊许可证，并且在某些情况下需要获得公司许可证。阅读许可证文档以获取更多信息。
+请注意，xasset 具有特殊许可证，并且在某些情况下需要获得公司许可证。阅读 [LICENSE](LICENSE) 文档以获取更多信息。
 
 ## 创作成员
 
